@@ -1,0 +1,144 @@
+---
+title: "Análisis de las tasas de interés activa y pasiva en sistema financiero boliviano"
+output: 
+  flexdashboard::flex_dashboard:
+    # theme:
+    #   bg: "#101010"
+    #   fg: "#FDF7F7" 
+    #   primary: "#7997f9"
+    #   base_font:
+    #     google: Prompt
+    #   code_font:
+    #     google: JetBrains Mono
+    orientation: columns
+    vertical_layout: fill
+# runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(dplyr)
+library(ggplot2)
+library(plotly)
+library(plyr)
+
+# thematic::thematic_rmd()
+```
+
+```{r clean, include=FALSE}
+load("db_tasa_activa.RData")
+load("db_tasa_pasiva.RData")
+
+# limpiar df_activa
+df_activa <- db_tasa_activa %>% select(-fecha, -file, -sheet)
+df_activa <- df_activa %>% mutate(categoria = ifelse(categoria == "BANCOS MULTIPLES", "BANCOS MÚLTIPLES", categoria))
+
+df_activa <- df_activa %>% mutate(categoria = ifelse(categoria == "MUTUALES (en proceso de conversión a Entidades Especializadas en Vivienda)", "ENTIDADES FINANCIERAS DE VIVIENDA", categoria))
+
+# limpiar df_pasiva
+df_pasiva <- db_tasa_pasiva %>% select(-fecha, -file, -sheet)
+df_pasiva <- df_pasiva %>% mutate(categoria = ifelse(categoria == "BANCOS MULTIPLES", "BANCOS MÚLTIPLES", categoria))
+
+df_pasiva <- df_pasiva %>% mutate(categoria = ifelse(categoria == "MUTUALES (en proceso de conversión a Entidades Especializadas en Vivienda)", "ENTIDADES FINANCIERAS DE VIVIENDA", categoria))
+```
+
+Column {data-width=650 .tabset}
+-----------------------------------------------------------------------
+
+### Tipo de entidades
+```{r grafico_activa}
+barplot(table(df_activa$categoria),
+        main = "Frecuencia de Registros de entidades",
+        xlab = "Entidades",
+        ylab = "Frecuencia",
+        col = "skyblue",
+        cex.names = 0.4,
+        las = 2,
+        border = "black")
+```
+
+### Tasas Activa Bs
+
+```{r serieActiva2023}
+df <- df_activa %>% filter(year == 2023)
+ggplot(df, aes(x = start_date)) +
+
+  geom_line(aes(y = mn_empresarial, color = "Empresarial"), linetype = "solid") +
+  geom_line(aes(y = mn_pyme, color = "Pyme"), linetype = "solid") +
+  geom_line(aes(y = mn_micro_credito, color = "Microcredito"), linetype = "solid") +
+  geom_line(aes(y = mn_consumo, color = "Consumo"), linetype = "solid") +
+  geom_line(aes(y = mn_vivienda, color = "Vivienda"), linetype = "solid") +
+  
+  labs(title = "Tasa activa 2023 en Bs.",
+       x = "Fecha",
+       y = "Tasa") +
+  scale_color_manual(name = "Credito",
+                     values = c("Empresarial" = "black", "Pyme" = "green", "Microcredito" = "orange", "Consumo" = "red", "Vivienda" = "blue"),
+                     labels = c("Empresarial", "Pyme", "Microcredito", "Consumo", "Vivienda"))
+```
+
+### Tasa Activa Vivienda vs Consumo
+```{r serieActiva}
+df <- df_activa %>% filter(year >= 2021)
+ggplot(df, aes(x = start_date)) +
+  geom_line(aes(y = mn_vivienda, color = "Vivienda"), linetype = "solid") +
+  geom_line(aes(y = mn_consumo, color = "Consumo"), linetype = "solid") +
+  labs(title = "Tasa activa en Bs. - Credito Vivienda vs Consumo",
+       x = "Fecha",
+       y = "Tasa") +
+  scale_color_manual(name = "Credito",
+                     values = c("Vivienda" = "blue", "Consumo" = "red"),
+                     labels = c("Vivienda", "Consumo"))
+```
+
+### Tasas Pasiva Bs
+
+```{r seriePasiva2023}
+df <- df_pasiva %>% filter(year == 2023)
+ggplot(df, aes(x = start_date)) +
+
+  geom_line(aes(y = mn_caja_ahorro, color = "CajaAhorros"), linetype = "solid") +
+  geom_line(aes(y = mn_dpf_30, color = "dpf30"), linetype = "solid") +
+  geom_line(aes(y = mn_dpf_30, color = "dpf60"), linetype = "solid") +
+  geom_line(aes(y = mn_dpf_30, color = "dpf90"), linetype = "solid") +
+  geom_line(aes(y = mn_dpf_30, color = "dpf180"), linetype = "solid") +
+  geom_line(aes(y = mn_dpf_30, color = "dpf360"), linetype = "solid") +
+  geom_line(aes(y = mn_dpf_30, color = "dpf720"), linetype = "solid") +
+  geom_line(aes(y = mn_dpf_30, color = "dpf1080"), linetype = "solid") +
+  geom_line(aes(y = mn_dpf_30, color = "dpfmayor"), linetype = "solid") +
+  
+  labs(title = "Tasa pasiva 2023 en Bs.",
+       x = "Fecha",
+       y = "Tasa") +
+  scale_color_manual(name = "Deposito",
+                     values = c("CajaAhorros" = "black", "dpf30" = "green", "dpf60" = "orange", "dpf90" = "red", "dpf180" = "blue", "dpf360" = "lightblue", "dpf720" = "yellow", "dpf1080" = "darkgreen", "dpfmayor" = "purple"),
+                     labels = c("Caja de Ahorros", "DPF 30", "DPF 60", "DPF 90", "DPF 180", "DPF 360", "DPF 720", "DPF 1080", "DPF Mayor"))
+```
+
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Indicadores
+
+Tasa de interés promedio para crédito de vivienda
+
+```{r}
+
+```
+
+### Indicadores
+
+Tasa de interés promedio para crédito de micro-crédito
+
+```{r}
+
+```
+
+### Indicadores
+
+Tasa de interés promedio para cajas de ahorro en moneda nacional
+
+```{r}
+
+```
