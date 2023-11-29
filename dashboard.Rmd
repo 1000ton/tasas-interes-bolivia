@@ -116,29 +116,99 @@ ggplot(df, aes(x = start_date)) +
 ```
 
 
+### Indicadores
+
+
+4. Tasa de interés promedio para DPF a corto plazo
+```{r}
+df <- df_pasiva %>% filter(year <= 2023)
+result <- df %>%
+  dplyr::group_by(categoria) %>%
+  dplyr::summarise(
+     dpf_30 = mean(mn_dpf_30, na.rm = TRUE),
+     dpf_60 = mean(mn_dpf_60, na.rm = TRUE),
+     dpf_90 = mean(mn_dpf_90, na.rm = TRUE),
+     dpf_180 = mean(mn_dpf_180, na.rm = TRUE),
+     dpf_360 = mean(mn_dpf_360, na.rm = TRUE)
+     )
+result
+```
+
+
+5. Tasa de interés promedio para DPF a mediano plazo
+```{r}
+df <- df_pasiva %>% filter(year <= 2023)
+result <- df %>%
+  dplyr::group_by(categoria) %>%
+  dplyr::summarise(
+     dpf_360 = mean(mn_dpf_360, na.rm = TRUE),
+     dpf_720 = mean(mn_dpf_720, na.rm = TRUE),
+     dpf_1080 = mean(mn_dpf_1080, na.rm = TRUE)
+  )
+result
+```
+
+6. Tasa de interés promedio para DPF a largo plazo
+```{r}
+df <- df_pasiva %>% filter(year <= 2023)
+result <- df %>%
+  dplyr::group_by(categoria) %>%
+  dplyr::summarise(
+     dpf_mayor_1080 = mean(mn_dpf_mayor_1080, na.rm = TRUE)
+  )
+result
+```
+
+7. Tasa de crecimiento de interés de activo para vivienda
+```{r}
+df <- df_activa %>% filter(year <= 2023)
+result <- df %>%
+  dplyr::group_by(year) %>%
+  dplyr::summarise(tasa = mean(mn_vivienda, na.rm = TRUE)) %>%
+  dplyr::arrange(-tasa)
+result
+```
+
+
+8. Tasa de crecimiento de interés de pasivo para DPF corto plazo
+9. Tasa de crecimiento de la TRE
+
+10. Tasa crecimiento de oferta en crédito de vivienda
+11. Tasa crecimiento de oferta en DPF de mediano plazo
+
+
 Column {data-width=350}
 -----------------------------------------------------------------------
 
-### Indicadores
-
-Tasa de interés promedio para crédito de vivienda
+### Tasa de interés promedio para crédito de vivienda por tipo de entidad 
 
 ```{r}
-
+df <- df_activa %>% filter(year <= 2023)
+result <- df %>%
+  dplyr::group_by(categoria) %>%
+  dplyr::summarise(tasa = mean(mn_vivienda, na.rm = TRUE)) %>%
+  dplyr::arrange(-tasa)
+result
 ```
 
-### Indicadores
-
-Tasa de interés promedio para crédito de micro-crédito
+### Tasa de interés promedio para crédito de micro-crédito
 
 ```{r}
-
+df <- df_activa %>% filter(year <= 2023)
+result <- df %>%
+  dplyr::group_by(categoria) %>%
+  dplyr::summarise(tasa = mean(mn_micro_credito, na.rm = TRUE)) %>%
+  dplyr::arrange(-tasa)
+result
 ```
 
-### Indicadores
-
-Tasa de interés promedio para cajas de ahorro en moneda nacional
+### Tasa de interés promedio para cajas de ahorro en moneda nacional
 
 ```{r}
-
+df <- df_pasiva %>% filter(year <= 2023)
+result <- df %>%
+  dplyr::group_by(categoria) %>%
+  dplyr::summarise(tasa = mean(mn_caja_ahorro, na.rm = TRUE)) %>%
+  dplyr::arrange(-tasa)
+result
 ```
