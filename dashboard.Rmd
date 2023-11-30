@@ -21,6 +21,7 @@ library(dplyr)
 library(ggplot2)
 library(plotly)
 library(plyr)
+library(DT)
 
 # thematic::thematic_rmd()
 ```
@@ -116,8 +117,7 @@ ggplot(df, aes(x = start_date)) +
 ```
 
 
-### Indicadores
-
+### Indicadores 1
 
 4. Tasa de interés promedio para DPF a corto plazo
 ```{r}
@@ -131,9 +131,12 @@ result <- df %>%
      dpf_180 = mean(mn_dpf_180, na.rm = TRUE),
      dpf_360 = mean(mn_dpf_360, na.rm = TRUE)
      )
-result
+DT::datatable(result, 
+              options = list(pageLength = 5, dom = "t"),
+              caption = "Tasa de interés promedio para DPF a corto plazo")
 ```
 
+### Indicadores 2
 
 5. Tasa de interés promedio para DPF a mediano plazo
 ```{r}
@@ -145,8 +148,12 @@ result <- df %>%
      dpf_720 = mean(mn_dpf_720, na.rm = TRUE),
      dpf_1080 = mean(mn_dpf_1080, na.rm = TRUE)
   )
-result
+DT::datatable(result, 
+              options = list(pageLength = 5, dom = "t"),
+              caption = "Tasa de interés promedio para DPF a mediano plazo")
 ```
+
+### Indicadores 3
 
 6. Tasa de interés promedio para DPF a largo plazo
 ```{r}
@@ -156,8 +163,12 @@ result <- df %>%
   dplyr::summarise(
      dpf_mayor_1080 = mean(mn_dpf_mayor_1080, na.rm = TRUE)
   )
-result
+DT::datatable(result, 
+              options = list(pageLength = 5, dom = "t"),
+              caption = "Tasa de interés promedio para DPF a largo plazo")
 ```
+
+### Indicadores 4
 
 7. Tasa de crecimiento de interés de activo para vivienda
 ```{r}
@@ -166,14 +177,51 @@ result <- df %>%
   dplyr::group_by(year) %>%
   dplyr::summarise(tasa = mean(mn_vivienda, na.rm = TRUE)) %>%
   dplyr::arrange(-tasa)
-result
+DT::datatable(result, 
+              options = list(pageLength = 5, dom = "t"),
+              caption = "Tasa de crecimiento de interés de activo para vivienda")
 ```
 
 
+### Indicadores 5
 8. Tasa de crecimiento de interés de pasivo para DPF corto plazo
+```{r}
+df <- df_pasiva %>% filter(year <= 2023)
+result <- df %>%
+  dplyr::group_by(year) %>%
+  dplyr::summarise(
+     dpf_30 = mean(mn_dpf_30, na.rm = TRUE),
+     dpf_60 = mean(mn_dpf_60, na.rm = TRUE),
+     dpf_90 = mean(mn_dpf_90, na.rm = TRUE),
+     dpf_180 = mean(mn_dpf_180, na.rm = TRUE),
+     dpf_360 = mean(mn_dpf_360, na.rm = TRUE)
+     )
+DT::datatable(result,
+              options = list(pageLength = 5, dom = "t"),
+              caption = "Tasa de crecimiento de interés de pasivo para DPF corto plazo")
+```
+
+
+
 9. Tasa de crecimiento de la TRE
 
-10. Tasa crecimiento de oferta en crédito de vivienda
+### Indicador 6
+10. Tasa de interes en crédito de vivienda por entidad - 2023
+
+```{r}
+df <- df_activa %>% filter(year == 2023)
+result <- df %>%
+  dplyr::group_by(entidad) %>%
+  dplyr::summarise(tasa = mean(mn_vivienda, na.rm = TRUE)) %>%
+  dplyr::arrange(tasa)
+# result
+
+DT::datatable(result, 
+              options = list(pageLength = 100, dom = "t"),
+              caption = "Tasa de interes en crédito de vivienda - 2023")
+```
+
+
 11. Tasa crecimiento de oferta en DPF de mediano plazo
 
 
@@ -188,7 +236,11 @@ result <- df %>%
   dplyr::group_by(categoria) %>%
   dplyr::summarise(tasa = mean(mn_vivienda, na.rm = TRUE)) %>%
   dplyr::arrange(-tasa)
-result
+# result
+
+DT::datatable(result, 
+              options = list(pageLength = 5, dom = "t"),
+              caption = "Tasa de interés promedio para crédito de vivienda por tipo de entidad")
 ```
 
 ### Tasa de interés promedio para crédito de micro-crédito
@@ -199,7 +251,11 @@ result <- df %>%
   dplyr::group_by(categoria) %>%
   dplyr::summarise(tasa = mean(mn_micro_credito, na.rm = TRUE)) %>%
   dplyr::arrange(-tasa)
-result
+# result
+DT::datatable(result,
+              options = list(pageLength = 5, dom = "t"),
+              caption = "Tasa de interés promedio para crédito de micro-crédito")
+
 ```
 
 ### Tasa de interés promedio para cajas de ahorro en moneda nacional
@@ -210,5 +266,8 @@ result <- df %>%
   dplyr::group_by(categoria) %>%
   dplyr::summarise(tasa = mean(mn_caja_ahorro, na.rm = TRUE)) %>%
   dplyr::arrange(-tasa)
-result
+# result
+DT::datatable(result,
+              options = list(pageLength = 5, dom = "t"),
+              caption = "Tasa de interés promedio para cajas de ahorro en moneda nacional")
 ```
